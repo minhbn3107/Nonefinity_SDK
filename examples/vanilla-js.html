@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nonefinity SDK - Vanilla JavaScript Example</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f9fafb;
+    }
+    
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    h1 {
+      color: #1f2937;
+      margin-bottom: 10px;
+    }
+    
+    p {
+      color: #6b7280;
+      line-height: 1.6;
+    }
+    
+    .controls {
+      margin-top: 30px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    
+    button {
+      padding: 10px 20px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+    
+    button:hover {
+      background: #2563eb;
+    }
+    
+    button:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+    }
+    
+    #output {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f3f4f6;
+      border-radius: 8px;
+      border-left: 4px solid #3b82f6;
+      white-space: pre-wrap;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    
+    .status {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    
+    .status.success {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    
+    .status.error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🤖 Nonefinity AI SDK</h1>
+    <p>Vanilla JavaScript example demonstrating the SDK usage.</p>
+    
+    <div class="controls">
+      <button id="listConfigs">List Configs</button>
+      <button id="listSessions">List Sessions</button>
+      <button id="streamMessage" disabled>Stream Message</button>
+      <button id="clearOutput">Clear Output</button>
+    </div>
+    
+    <div id="status"></div>
+    <div id="output"></div>
+  </div>
+
+  <script type="module">
+    // Import the SDK (in production, use the built version from npm/CDN)
+    import { NonefinityClient } from '../dist/index.mjs';
+    
+    // Configuration
+    const CONFIG = {
+      apiUrl: 'http://localhost:8000',
+      apiKey: 'your-api-key-here',
+      debug: true
+    };
+    
+    // Initialize client
+    const client = new NonefinityClient(CONFIG);
+    let currentSessionId = null;
+    
+    // DOM elements
+    const output = document.getElementById('output');
+    const status = document.getElementById('status');
+    const streamBtn = document.getElementById('streamMessage');
+    
+    // Helper functions
+    function log(message, type = 'info') {
+      const timestamp = new Date().toLocaleTimeString();
+      const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : 'ℹ️';
+      output.textContent += `[${timestamp}] ${prefix} ${message}\n`;
+      output.scrollTop = output.scrollHeight;
+    }
+    
+    function showStatus(message, isError = false) {
+      status.className = `status ${isError ? 'error' : 'success'}`;
+      status.textContent = message;
+      setTimeout(() => {
+        status.textContent = '';
+        status.className = 'status';
+      }, 3000);
+    }
+    
+    function clearOutput() {
+      output.textContent = '';
+    }
+    
+    // Event handlers
+    document.getElementById('listConfigs').addEventListener('click', async () => {
+      log('Fetching chat configurations...');
+      
+      try {
+        const response = await client.listConfigs();
+        
+        if (response.success && response.data) {
+          log(`Found ${response.data.total} configurations`, 'success');
+          response.data.chat_configs.forEach(config => {
+            log(`  - ${config.name} (${config.id})`);
+          });
+          showStatus(`Loaded ${response.data.total} configs`);
+        } else {
+          log(`Failed: ${response.error}`, 'error');
+          showStatus('Failed to load configs', true);
+        }
+      } catch (error) {
+        log(`Error: ${error.message}`, 'error');
+        showStatus('Error occurred', true);
+      }
+    });
+    
+    document.getElementById('listSessions').addEventListener('click', async () => {
+      log('Fetching chat sessions...');
+      
+      try {
+        const response = await client.listSessions();
+        
+        if (response.success && response.data) {
+          log(`Found ${response.data.total} sessions`, 'success');
+          response.data.chat_sessions.forEach(session => {
+            log(`  - ${session.name} (${session.id})`);
+          });
+          
+          // Enable stream button if we have sessions
+          if (response.data.chat_sessions.length > 0) {
+            currentSessionId = response.data.chat_sessions[0].id;
+            streamBtn.disabled = false;
+            log(`Selected session: ${currentSessionId}`);
+          }
+          
+          showStatus(`Loaded ${response.data.total} sessions`);
+        } else {
+          log(`Failed: ${response.error}`, 'error');
+          showStatus('Failed to load sessions', true);
+        }
+      } catch (error) {
+        log(`Error: ${error.message}`, 'error');
+        showStatus('Error occurred', true);
+      }
+    });
+    
+    document.getElementById('streamMessage').addEventListener('click', async () => {
+      if (!currentSessionId) {
+        log('No session selected', 'error');
+        return;
+      }
+      
+      log('Starting message stream...');
+      streamBtn.disabled = true;
+      
+      try {
+        await client.streamMessage(
+          currentSessionId,
+          'Hello! Tell me a short joke.',
+          (event) => {
+            switch (event.event) {
+              case 'start':
+                log('Stream started', 'success');
+                break;
+              
+              case 'tool_calls':
+                log(`🔧 Tool: ${event.data.name}`);
+                break;
+              
+              case 'tool_result':
+                log(`📦 Result: ${JSON.stringify(event.data.result).substring(0, 100)}...`);
+                break;
+              
+              case 'ai_result':
+                log(`💬 AI: ${event.data.content}`);
+                break;
+              
+              case 'error':
+                log(`Error: ${event.data.message}`, 'error');
+                break;
+              
+              case 'message':
+                if (event.data.done) {
+                  log('Stream completed', 'success');
+                  showStatus('Message sent successfully');
+                  streamBtn.disabled = false;
+                }
+                break;
+            }
+          }
+        );
+      } catch (error) {
+        log(`Error: ${error.message}`, 'error');
+        showStatus('Stream failed', true);
+        streamBtn.disabled = false;
+      }
+    });
+    
+    document.getElementById('clearOutput').addEventListener('click', clearOutput);
+    
+    // Initial message
+    log('Nonefinity SDK loaded successfully', 'success');
+    log('Click "List Configs" or "List Sessions" to get started');
+  </script>
+</body>
+</html>

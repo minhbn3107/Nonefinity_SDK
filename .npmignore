@@ -1,0 +1,48 @@
+# Source files
+src/
+
+# Development files
+*.ts
+*.tsx
+!*.d.ts
+
+# Configuration files
+tsconfig.json
+tsup.config.ts
+eslint.config.ts
+
+# Internal documentation (exclude from npm package)
+API_KEY_SETUP.md
+CONTRIBUTING.md
+INTEGRATION_GUIDE.md
+PUBLISHING.md
+SDK_SETUP_FRONTEND.md
+SUMMARY.md
+examples/
+test/
+
+# IDE
+.cursor/
+.vscode/
+.idea/
+
+# Dependencies
+node_modules/
+bun.lock
+package-lock.json
+
+# Build artifacts
+*.log
+*.tsbuildinfo
+
+# Git
+.git/
+.gitignore
+
+# Tests
+__tests__/
+*.test.ts
+*.spec.ts
+
+# Misc
+.DS_Store

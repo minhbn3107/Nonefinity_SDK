@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat Widget Test</title>
+  <link rel="stylesheet" href="../dist/ChatWidget.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+    h1 { color: #1a202c; margin-bottom: 10px; }
+    p { color: #718096; line-height: 1.6; }
+    .config { background: #f7fafc; padding: 20px; border-radius: 8px; margin: 20px 0; }
+    label { display: block; margin: 10px 0 5px; font-weight: 600; color: #2d3748; }
+    input { width: 100%; padding: 10px; border: 2px solid #e2e8f0; border-radius: 6px; }
+    button { 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white; border: none; padding: 12px 24px;
+      border-radius: 8px; cursor: pointer; margin: 10px 5px 0 0;
+      font-weight: 600;
+    }
+    button:hover { transform: translateY(-2px); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🤖 Chat Widget Test</h1>
+    <p>Test the embeddable chat widget component</p>
+    
+    <div class="config">
+      <label>API URL</label>
+      <input type="text" id="apiUrl" value="http://localhost:8000">
+      
+      <label>API Key</label>
+      <input type="text" id="apiKey" value="nf_live_test_key">
+      
+      <label>Session ID</label>
+      <input type="text" id="sessionId" placeholder="Enter session ID">
+      
+      <button onclick="loadWidget()">Load Widget</button>
+      <button onclick="removeWidget()">Remove Widget</button>
+    </div>
+    
+    <p><strong>Instructions:</strong> Fill in the configuration above and click "Load Widget" to test the chat widget.</p>
+  </div>
+
+  <div id="widget-container"></div>
+
+  <script type="module">
+    import { ChatWidget } from '../dist/index.mjs';
+    
+    window.ChatWidget = ChatWidget;
+    window.widgetInstance = null;
+
+    window.loadWidget = function() {
+      const apiUrl = document.getElementById('apiUrl').value;
+      const apiKey = document.getElementById('apiKey').value;
+      const sessionId = document.getElementById('sessionId').value;
+
+      if (!apiUrl || !apiKey || !sessionId) {
+        alert('Please fill in all fields');
+        return;
+      }
+
+      removeWidget();
+
+      const container = document.getElementById('widget-container');
+      const widget = document.createElement('div');
+      widget.id = 'chat-widget-root';
+      container.appendChild(widget);
+
+      // Note: React rendering would need to be set up properly
+      console.log('Widget configuration:', { apiUrl, apiKey, sessionId });
+      alert('Widget configured! (Full React integration needed for rendering)');
+    };
+
+    window.removeWidget = function() {
+      const container = document.getElementById('widget-container');
+      container.innerHTML = '';
+    };
+  </script>
+</body>
+</html>

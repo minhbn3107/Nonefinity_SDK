@@ -1,0 +1,80 @@
+{
+  "name": "@nonefinity/ai-sdk",
+  "version": "1.0.0",
+  "description": "AI SDK for integrating Nonefinity chat system into any website",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./simple": {
+      "import": "./dist/simple.mjs",
+      "require": "./dist/simple.js",
+      "types": "./dist/simple.d.ts"
+    },
+    "./styles": "./dist/ChatWidget.css"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src",
+    "prepublishOnly": "bun run build"
+  },
+  "keywords": [
+    "nonefinity",
+    "sdk",
+    "ai",
+    "agent",
+    "chat",
+    "widget",
+    "react",
+    "typescript",
+    "streaming",
+    "sse"
+  ],
+  "author": "Nonefinity",
+  "license": "MIT",
+  "homepage": "https://github.com/genius-wizard-dev/Nonefinity_Agents",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/genius-wizard-dev/Nonefinity_Agents.git"
+  },
+  "bugs": {
+    "url": "https://github.com/genius-wizard-dev/Nonefinity_Agents/issues"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.0",
+    "@types/bun": "latest",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "@typescript-eslint/eslint-plugin": "^8.46.2",
+    "@typescript-eslint/parser": "^8.46.2",
+    "eslint": "^9.39.0",
+    "globals": "^16.5.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.2"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    }
+  }
+}

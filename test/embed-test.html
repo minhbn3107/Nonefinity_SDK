@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nonefinity SDK - Embedding Test</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      margin-bottom: 30px;
+    }
+
+    h1 {
+      color: #1a202c;
+      margin-bottom: 10px;
+      font-size: 32px;
+    }
+
+    .subtitle {
+      color: #718096;
+      font-size: 18px;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      margin-top: 15px;
+    }
+
+    .status.success {
+      background: #c6f6d5;
+      color: #22543d;
+    }
+
+    .status.error {
+      background: #fed7d7;
+      color: #742a2a;
+    }
+
+    .status.loading {
+      background: #bee3f8;
+      color: #2c5282;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .card h2 {
+      color: #2d3748;
+      margin-bottom: 15px;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-content {
+      color: #4a5568;
+      line-height: 1.6;
+    }
+
+    button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      margin: 5px;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    #console {
+      background: #1a202c;
+      color: #68d391;
+      padding: 20px;
+      border-radius: 12px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      max-height: 400px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .console-line {
+      margin-bottom: 8px;
+      padding: 4px 0;
+      border-bottom: 1px solid rgba(104, 211, 145, 0.1);
+    }
+
+    .console-time {
+      color: #a0aec0;
+      font-size: 11px;
+    }
+
+    .console-error {
+      color: #fc8181;
+    }
+
+    .console-success {
+      color: #68d391;
+    }
+
+    .console-info {
+      color: #63b3ed;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 10px;
+      transition: border-color 0.2s;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .config-section {
+      background: #f7fafc;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+
+    .config-section label {
+      display: block;
+      color: #4a5568;
+      font-weight: 600;
+      margin-bottom: 5px;
+      font-size: 13px;
+    }
+
+    .icon {
+      font-size: 24px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      background: #edf2f7;
+      color: #2d3748;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-right: 5px;
+    }
+
+    #messageInput {
+      resize: vertical;
+      min-height: 80px;
+      font-family: inherit;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🤖 Nonefinity SDK Embedding Test</h1>
+      <p class="subtitle">Test your AI SDK integration on external websites</p>
+      <div id="sdkStatus" class="status loading">⏳ Initializing SDK...</div>
+    </div>
+
+    <div class="grid">
+      <!-- Configuration Card -->
+      <div class="card">
+        <h2><span class="icon">⚙️</span> Configuration</h2>
+        <div class="card-content">
+          <div class="config-section">
+            <label for="apiUrl">API URL</label>
+            <input type="text" id="apiUrl" value="http://localhost:8000" placeholder="https://your-api-url.com">
+          </div>
+
+          <div class="config-section">
+            <label for="apiKey">API Key</label>
+            <input type="text" id="apiKey" value="nf_live_test_key" placeholder="nf_live_your_api_key">
+          </div>
+
+          <div class="config-section">
+            <label for="sessionId">Session ID (Optional)</label>
+            <input type="text" id="sessionId" placeholder="Auto-created if empty">
+          </div>
+
+          <div class="controls">
+            <button onclick="initializeSDK()">🔄 Reinitialize</button>
+            <button onclick="testConnection()">🔌 Test Connection</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- API Tests Card -->
+      <div class="card">
+        <h2><span class="icon">🧪</span> API Tests</h2>
+        <div class="card-content">
+          <p style="margin-bottom: 15px;">Test SDK functionality:</p>
+          
+          <div class="controls">
+            <button onclick="testListConfigs()">📋 List Configs</button>
+            <button onclick="testListSessions()">💬 List Sessions</button>
+            <button onclick="testCreateSession()">➕ Create Session</button>
+            <button onclick="testGetSession()" id="getSessionBtn" disabled>📖 Get Session</button>
+          </div>
+
+          <div style="margin-top: 15px;">
+            <span class="badge">Config ID</span>
+            <input type="text" id="configId" placeholder="Enter config ID">
+          </div>
+        </div>
+      </div>
+
+      <!-- Streaming Test Card -->
+      <div class="card">
+        <h2><span class="icon">💬</span> Message Streaming</h2>
+        <div class="card-content">
+          <textarea id="messageInput" placeholder="Enter your message here...">Hello! Can you help me?</textarea>
+          
+          <div class="controls">
+            <button onclick="sendMessage()" id="sendBtn" disabled>🚀 Send Message</button>
+            <button onclick="clearMessages()">🗑️ Clear Messages</button>
+          </div>
+
+          <div id="streamStatus" style="margin-top: 15px; display: none;">
+            <span class="badge">Streaming...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Console Output -->
+    <div class="card">
+      <h2><span class="icon">📊</span> Console Output</h2>
+      <div class="controls">
+        <button onclick="clearConsole()">🧹 Clear Console</button>
+        <button onclick="exportLogs()">💾 Export Logs</button>
+      </div>
+      <div id="console"></div>
+    </div>
+  </div>
+
+  <!-- Load SDK from local build -->
+  <script type="module">
+    import { NonefinityClient } from '../dist/index.mjs';
+
+    // Make it globally available
+    window.NonefinityClient = NonefinityClient;
+    window.sdkClient = null;
+    window.currentSessionId = null;
+    window.logs = [];
+
+    // Console logging
+    window.log = function(message, type = 'info') {
+      const timestamp = new Date().toLocaleTimeString();
+      const consoleEl = document.getElementById('console');
+      const logEntry = {
+        time: timestamp,
+        message: message,
+        type: type
+      };
+      
+      window.logs.push(logEntry);
+      
+      const className = type === 'error' ? 'console-error' : 
+                       type === 'success' ? 'console-success' : 
+                       'console-info';
+      
+      const line = document.createElement('div');
+      line.className = 'console-line';
+      line.innerHTML = `<span class="console-time">[${timestamp}]</span> <span class="${className}">${message}</span>`;
+      
+      consoleEl.appendChild(line);
+      consoleEl.scrollTop = consoleEl.scrollHeight;
+
+      console.log(`[${timestamp}] ${message}`);
+    };
+
+    window.clearConsole = function() {
+      document.getElementById('console').innerHTML = '';
+      window.logs = [];
+      log('Console cleared', 'info');
+    };
+
+    window.exportLogs = function() {
+      const logsText = window.logs.map(l => `[${l.time}] ${l.message}`).join('\n');
+      const blob = new Blob([logsText], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `sdk-test-logs-${Date.now()}.txt`;
+      a.click();
+      URL.revokeObjectURL(url);
+      log('Logs exported', 'success');
+    };
+
+    // Initialize SDK
+    window.initializeSDK = async function() {
+      const apiUrl = document.getElementById('apiUrl').value;
+      const apiKey = document.getElementById('apiKey').value;
+      const sessionId = document.getElementById('sessionId').value;
+
+      if (!apiUrl || !apiKey) {
+        log('❌ Please provide API URL and API Key', 'error');
+        return;
+      }
+
+      try {
+        log('🔄 Initializing Nonefinity SDK...', 'info');
+        
+        window.sdkClient = new NonefinityClient({
+          apiUrl: apiUrl,
+          apiKey: apiKey,
+          debug: true
+        });
+
+        if (sessionId) {
+          window.currentSessionId = sessionId;
+          document.getElementById('sendBtn').disabled = false;
+          document.getElementById('getSessionBtn').disabled = false;
+        }
+
+        document.getElementById('sdkStatus').className = 'status success';
+        document.getElementById('sdkStatus').textContent = '✅ SDK Initialized';
+        
+        log('✅ SDK initialized successfully', 'success');
+        log(`📍 API URL: ${apiUrl}`, 'info');
+        log(`🔑 API Key: ${apiKey.substring(0, 15)}...`, 'info');
+      } catch (error) {
+        log(`❌ Failed to initialize SDK: ${error.message}`, 'error');
+        document.getElementById('sdkStatus').className = 'status error';
+        document.getElementById('sdkStatus').textContent = '❌ Initialization Failed';
+      }
+    };
+
+    // Test connection
+    window.testConnection = async function() {
+      if (!window.sdkClient) {
+        log('❌ SDK not initialized', 'error');
+        return;
+      }
+
+      try {
+        log('🔌 Testing connection...', 'info');
+        const response = await window.sdkClient.listConfigs(0, 1);
+        
+        if (response.success) {
+          log('✅ Connection successful!', 'success');
+          log(`📊 API is responding correctly`, 'info');
+        } else {
+          log(`❌ Connection failed: ${response.error}`, 'error');
+        }
+      } catch (error) {
+        log(`❌ Connection error: ${error.message}`, 'error');
+      }
+    };
+
+    // Test list configs
+    window.testListConfigs = async function() {
+      if (!window.sdkClient) {
+        log('❌ SDK not initialized', 'error');
+        return;
+      }
+
+      try {
+        log('📋 Fetching chat configurations...', 'info');
+        const response = await window.sdkClient.listConfigs();
+        
+        if (response.success && response.data) {
+          log(`✅ Found ${response.data.total} configuration(s)`, 'success');
+          response.data.chat_configs.forEach((config, i) => {
+            log(`  ${i + 1}. ${config.name} (ID: ${config.id})`, 'info');
+          });
+
+          // Auto-fill first config ID
+          if (response.data.chat_configs.length > 0) {
+            document.getElementById('configId').value = response.data.chat_configs[0].id;
+            log(`💡 First config ID copied to input`, 'info');
+          }
+        } else {
+          log(`❌ Failed: ${response.error}`, 'error');
+        }
+      } catch (error) {
+        log(`❌ Error: ${error.message}`, 'error');
+      }
+    };
+
+    // Test list sessions
+    window.testListSessions = async function() {
+      if (!window.sdkClient) {
+        log('❌ SDK not initialized', 'error');
+        return;
+      }
+
+      try {
+        log('💬 Fetching chat sessions...', 'info');
+        const response = await window.sdkClient.listSessions();
+        
+        if (response.success && response.data) {
+          log(`✅ Found ${response.data.total} session(s)`, 'success');
+          response.data.chat_sessions.forEach((session, i) => {
+            log(`  ${i + 1}. ${session.name || 'Unnamed'} (ID: ${session.id})`, 'info');
+          });
+
+          // Auto-fill first session ID
+          if (response.data.chat_sessions.length > 0) {
+            window.currentSessionId = response.data.chat_sessions[0].id;
+            document.getElementById('sessionId').value = window.currentSessionId;
+            document.getElementById('sendBtn').disabled = false;
+            document.getElementById('getSessionBtn').disabled = false;
+            log(`💡 First session ID selected`, 'info');
+          }
+        } else {
+          log(`❌ Failed: ${response.error}`, 'error');
+        }
+      } catch (error) {
+        log(`❌ Error: ${error.message}`, 'error');
+      }
+    };
+
+    // Test create session
+    window.testCreateSession = async function() {
+      if (!window.sdkClient) {
+        log('❌ SDK not initialized', 'error');
+        return;
+      }
+
+      const configId = document.getElementById('configId').value;
+      if (!configId) {
+        log('❌ Please enter a Config ID first', 'error');
+        return;
+      }
+
+      try {
+        log('➕ Creating new chat session...', 'info');
+        const response = await window.sdkClient.createSession({
+          chat_config_id: configId,
+          name: `Test Session ${new Date().toLocaleTimeString()}`
+        });
+        
+        if (response.success && response.data) {
+          window.currentSessionId = response.data.id;
+          document.getElementById('sessionId').value = window.currentSessionId;
+          document.getElementById('sendBtn').disabled = false;
+          document.getElementById('getSessionBtn').disabled = false;
+          
+          log(`✅ Session created successfully!`, 'success');
+          log(`   ID: ${response.data.id}`, 'info');
+          log(`   Name: ${response.data.name}`, 'info');
+        } else {
+          log(`❌ Failed: ${response.error}`, 'error');
+        }
+      } catch (error) {
+        log(`❌ Error: ${error.message}`, 'error');
+      }
+    };
+
+    // Test get session
+    window.testGetSession = async function() {
+      if (!window.sdkClient) {
+        log('❌ SDK not initialized', 'error');
+        return;
+      }
+
+      if (!window.currentSessionId) {
+        log('❌ No session selected', 'error');
+        return;
+      }
+
+      try {
+        log('📖 Fetching session details...', 'info');
+        const response = await window.sdkClient.getSession(window.currentSessionId);
+        
+        if (response.success && response.data) {
+          log(`✅ Session details retrieved`, 'success');
+          log(`   Messages: ${response.data.messages?.total || 0}`, 'info');
+          log(`   Created: ${new Date(response.data.created_at).toLocaleString()}`, 'info');
+        } else {
+          log(`❌ Failed: ${response.error}`, 'error');
+        }
+      } catch (error) {
+        log(`❌ Error: ${error.message}`, 'error');
+      }
+    };
+
+    // Send message
+    window.sendMessage = async function() {
+      if (!window.sdkClient) {
+        log('❌ SDK not initialized', 'error');
+        return;
+      }
+
+      if (!window.currentSessionId) {
+        log('❌ No session selected', 'error');
+        return;
+      }
+
+      const message = document.getElementById('messageInput').value;
+      if (!message.trim()) {
+        log('❌ Please enter a message', 'error');
+        return;
+      }
+
+      try {
+        log(`📤 Sending message: "${message}"`, 'info');
+        document.getElementById('streamStatus').style.display = 'block';
+        document.getElementById('sendBtn').disabled = true;
+
+        await window.sdkClient.streamMessage(
+          window.currentSessionId,
+          message,
+          (event) => {
+            switch (event.event) {
+              case 'start':
+                log('🎬 Stream started', 'success');
+                break;
+
+              case 'tool_calls':
+                log(`🔧 Tool: ${event.data.name}`, 'info');
+                break;
+
+              case 'tool_result':
+                log(`📦 Tool result received`, 'info');
+                break;
+
+              case 'ai_result':
+                log(`💬 AI: ${event.data.content}`, 'success');
+                break;
+
+              case 'error':
+                log(`❌ Stream error: ${event.data.message}`, 'error');
+                break;
+
+              case 'message':
+                if (event.data.done) {
+                  log('✨ Stream completed', 'success');
+                  document.getElementById('streamStatus').style.display = 'none';
+                  document.getElementById('sendBtn').disabled = false;
+                }
+                break;
+            }
+          }
+        );
+      } catch (error) {
+        log(`❌ Error: ${error.message}`, 'error');
+        document.getElementById('streamStatus').style.display = 'none';
+        document.getElementById('sendBtn').disabled = false;
+      }
+    };
+
+    window.clearMessages = function() {
+      document.getElementById('messageInput').value = '';
+      log('🗑️ Message input cleared', 'info');
+    };
+
+    // Auto-initialize on load
+    window.addEventListener('load', () => {
+      log('👋 Welcome to Nonefinity SDK Test Page', 'success');
+      log('📌 This page tests SDK embedding on external websites', 'info');
+      log('🔧 Configure your API settings and click "Reinitialize"', 'info');
+      initializeSDK();
+    });
+  </script>
+</body>
+</html>
