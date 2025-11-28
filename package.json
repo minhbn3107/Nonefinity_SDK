@@ -1,6 +1,6 @@
 {
     "name": "@nonefinity/ai-sdk",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "AI SDK for integrating Nonefinity chat system into any website",
     "main": "./dist/index.js",
     "module": "./dist/index.mjs",
