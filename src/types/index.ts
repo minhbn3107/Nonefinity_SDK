@@ -188,22 +188,8 @@ export interface NonefinityConfig {
 
 // Helper function to resolve default API URL
 export function getDefaultApiUrl(): string {
-    // Check if we're in a browser environment
-    if (typeof window !== "undefined") {
-        // Browser: check hostname for production vs local
-        const hostname = window.location.hostname;
-        if (hostname === "localhost" || hostname === "127.0.0.1") {
-            return "http://localhost:8000/api/v1";
-        }
-        return "https://api.nonefinity.com/api/v1";
-    }
-
-    // Node.js: check NODE_ENV or default to local
-    const nodeEnv = process.env.NODE_ENV;
-    if (nodeEnv === "production") {
-        return "https://api.nonefinity.com/api/v1";
-    }
-    return "http://localhost:8000/api/v1";
+    // Always use the production URL by default
+    return "https://api.nonefinity.com/api/v1";
 }
 
 // Widget Configuration Types

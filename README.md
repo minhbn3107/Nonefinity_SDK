@@ -7,28 +7,33 @@ AI SDK for integrating Nonefinity's powerful chat system into any website. Built
 
 ## Features
 
-- 🚀 **Easy Integration** - Drop-in chat widget for any website
-- 💬 **Real-time Streaming** - Server-Sent Events (SSE) for live responses
-- 🛠️ **Tool Execution** - Support for AI agent tools with live feedback
-- 🎨 **Customizable UI** - Flexible styling and positioning options
-- 📦 **TypeScript Support** - Full type definitions included
-- ⚛️ **React Components** - Pre-built React components
-- 🔐 **Secure** - Support for API keys and custom auth tokens
+-   🚀 **Easy Integration** - Drop-in chat widget for any website
+-   💬 **Real-time Streaming** - Server-Sent Events (SSE) for live responses
+-   🛠️ **Tool Execution** - Support for AI agent tools with live feedback
+-   🎨 **Customizable UI** - Flexible styling and positioning options
+-   📦 **TypeScript Support** - Full type definitions included
+-   ⚛️ **React Components** - Pre-built React components
+-   🔐 **Secure** - Support for API keys and custom auth tokens
 
 ## Installation
 
+Always install the latest published version to benefit from the newest browser fixes and streaming improvements.
+
 ```bash
-npm install @nonefinity/ai-sdk
+npm install @nonefinity/ai-sdk@^1.0.1
 # or
-yarn add @nonefinity/ai-sdk
+yarn add @nonefinity/ai-sdk@^1.0.1
 # or
-pnpm add @nonefinity/ai-sdk
+pnpm add @nonefinity/ai-sdk@^1.0.1
 ```
+
+> **Heads up:** Version 1.0.1 includes improved SSE parsing for browsers that deliver events as strings (Safari, some Chromium builds). Upgrade if you previously saw empty assistant replies.
 
 ## Examples
 
 Check out our example implementation:
-- [Nonefinity SDK Example](https://github.com/minhbn3107/Nonefinity_SDK_Example) - Complete React integration with streaming chat
+
+-   [Nonefinity SDK Example](https://github.com/minhbn3107/Nonefinity_SDK_Example) - Complete React integration with streaming chat
 
 ## Quick Start
 
@@ -39,17 +44,16 @@ import { ChatWidget } from "@nonefinity/ai-sdk";
 import "@nonefinity/ai-sdk/styles";
 
 function App() {
-  return (
-    <ChatWidget
-      sessionId="your-session-id"
-      apiUrl="https://your-api-url.com"
-      apiKey="your-api-key"
-      position="bottom-right"
-      primaryColor="#3b82f6"
-      title="AI Assistant"
-      placeholder="Ask me anything..."
-    />
-  );
+    return (
+        <ChatWidget
+            sessionId="your-session-id"
+            apiKey="your-api-key"
+            position="bottom-right"
+            primaryColor="#3b82f6"
+            title="AI Assistant"
+            placeholder="Ask me anything..."
+        />
+    );
 }
 ```
 
@@ -59,17 +63,17 @@ function App() {
 import { NonefinitySimpleClient } from "@nonefinity/ai-sdk/simple";
 
 const client = new NonefinitySimpleClient({
-  chatConfigId: "your-config-id",
-  apiKey: "your-api-key",
-  apiUrl: "https://your-api-url.com",
-  session: "auto", // auto-generate session ID
+    chatConfigId: "your-config-id",
+    apiKey: "your-api-key",
+    // apiUrl: "https://api.nonefinity.com/api/v1", // Optional: Defaults to production
+    session: "auto", // auto-generate session ID
 });
 
 // Send a message with streaming
 await client.chat("Hello, how can you help me?", (event) => {
-  if (event.event === "message" && event.data.content) {
-    console.log("AI:", event.data.content);
-  }
+    if (event.event === "message" && event.data.content) {
+        console.log("AI:", event.data.content);
+    }
 });
 ```
 
@@ -79,35 +83,35 @@ await client.chat("Hello, how can you help me?", (event) => {
 import { NonefinityClient } from "@nonefinity/ai-sdk";
 
 const client = new NonefinityClient({
-  apiUrl: "https://your-api-url.com",
-  apiKey: "your-api-key",
-  debug: true,
+    apiKey: "your-api-key",
+    // apiUrl: "https://api.nonefinity.com/api/v1", // Optional: Defaults to production
+    debug: true,
 });
 
 // Create a chat configuration
 const config = await client.createConfig({
-  name: "My Chat Bot",
-  chat_model_id: "model-id",
-  instruction_prompt: "You are a helpful assistant.",
+    name: "My Chat Bot",
+    chat_model_id: "model-id",
+    instruction_prompt: "You are a helpful assistant.",
 });
 
 // Create a chat session
 const session = await client.createSession({
-  chat_config_id: config.data.id,
-  name: "User Conversation",
+    chat_config_id: config.data.id,
+    name: "User Conversation",
 });
 
 // Stream a message
 await client.streamMessage(
-  session.data.id,
-  "Hello, how can you help me?",
-  (event) => {
-    if (event.event === "ai_result") {
-      console.log("AI:", event.data.content);
-    } else if (event.event === "tool_calls") {
-      console.log("Tool called:", event.data.name);
+    session.data.id,
+    "Hello, how can you help me?",
+    (event) => {
+        if (event.event === "ai_result") {
+            console.log("AI:", event.data.content);
+        } else if (event.event === "tool_calls") {
+            console.log("Tool called:", event.data.name);
+        }
     }
-  }
 );
 ```
 
@@ -122,12 +126,14 @@ new NonefinitySimpleClient(config: SimpleClientConfig)
 ```
 
 **Config Options:**
-- `chatConfigId` (string, required) - Chat configuration ID
-- `apiKey` (string, required) - API key for authentication
-- `apiUrl` (string, optional) - Base URL of your Nonefinity API
-- `session` (string | "auto", optional) - Session ID or "auto" to generate
+
+-   `chatConfigId` (string, required) - Chat configuration ID
+-   `apiKey` (string, required) - API key for authentication
+-   `apiUrl` (string, optional) - Base URL of your Nonefinity API (defaults to production)
+-   `session` (string | "auto", optional) - Session ID or "auto" to generate
 
 **Methods:**
+
 ```typescript
 // Send a chat message with streaming
 chat(message: string, onEvent: (event: StreamEvent) => void): Promise<void>
@@ -147,12 +153,14 @@ createSession(): Promise<string>
 Full-featured client for complete API access.
 
 **Config Options:**
-- `apiUrl` (string, required) - Base URL of your Nonefinity API
-- `apiKey` (string, optional) - API key for authentication
-- `getAuthToken` (function, optional) - Function to get dynamic auth token
-- `debug` (boolean, optional) - Enable debug logging
+
+-   `apiUrl` (string, optional) - Base URL of your Nonefinity API (defaults to production)
+-   `apiKey` (string, optional) - API key for authentication
+-   `getAuthToken` (function, optional) - Function to get dynamic auth token
+-   `debug` (boolean, optional) - Enable debug logging
 
 **Key Methods:**
+
 ```typescript
 // Chat Configuration
 listConfigs(skip?: number, limit?: number): Promise<ApiResponse<ChatConfigListResponse>>
@@ -173,19 +181,20 @@ streamMessage(sessionId: string, message: string, onEvent: (event: StreamEvent) 
 ### ChatWidget Component
 
 **Props:**
+
 ```typescript
 interface WidgetConfig {
-  sessionId: string; // Required - Chat session ID
-  apiUrl: string; // Required - API base URL
-  apiKey?: string; // Optional - API key
-  getAuthToken?: () => Promise<string | null> | string | null; // Optional - Auth token function
-  position?: "bottom-right" | "bottom-left" | "top-right" | "top-left"; // Default: "bottom-right"
-  primaryColor?: string; // Default: "#3b82f6"
-  title?: string; // Default: "AI Assistant"
-  placeholder?: string; // Default: "Type your message..."
-  className?: string; // Optional - Additional CSS classes
-  style?: React.CSSProperties; // Optional - Inline styles
-  onError?: (error: Error) => void; // Optional - Error callback
+    sessionId: string; // Required - Chat session ID
+    apiUrl?: string; // Optional - API base URL (defaults to production)
+    apiKey?: string; // Optional - API key
+    getAuthToken?: () => Promise<string | null> | string | null; // Optional - Auth token function
+    position?: "bottom-right" | "bottom-left" | "top-right" | "top-left"; // Default: "bottom-right"
+    primaryColor?: string; // Default: "#3b82f6"
+    title?: string; // Default: "AI Assistant"
+    placeholder?: string; // Default: "Type your message..."
+    className?: string; // Optional - Additional CSS classes
+    style?: React.CSSProperties; // Optional - Inline styles
+    onError?: (error: Error) => void; // Optional - Error callback
 }
 ```
 
@@ -193,14 +202,14 @@ interface WidgetConfig {
 
 The SDK emits the following events during streaming:
 
-| Event          | Description                     | Data                                      |
-| -------------- | ------------------------------- | ----------------------------------------- |
-| `start`        | Stream started                  | `{}`                                      |
-| `tool_calls`   | AI is calling a tool            | `{ name, arguments, id? }`                |
-| `tool_result`  | Tool execution completed        | `{ name, result, id? }`                   |
-| `ai_result`    | AI response content             | `{ role, content, is_delta? }`            |
-| `error`        | Error occurred                  | `{ message, status_code? }`               |
-| `message`      | Generic message (includes done) | `{ done?: boolean }`                      |
+| Event         | Description                     | Data                           |
+| ------------- | ------------------------------- | ------------------------------ |
+| `start`       | Stream started                  | `{}`                           |
+| `tool_calls`  | AI is calling a tool            | `{ name, arguments, id? }`     |
+| `tool_result` | Tool execution completed        | `{ name, result, id? }`        |
+| `ai_result`   | AI response content             | `{ role, content, is_delta? }` |
+| `error`       | Error occurred                  | `{ message, status_code? }`    |
+| `message`     | Generic message (includes done) | `{ done?: boolean }`           |
 
 ## TypeScript Support
 
@@ -208,21 +217,21 @@ Full TypeScript definitions included:
 
 ```typescript
 import type {
-  ChatConfig,
-  ChatSession,
-  ChatMessage,
-  StreamEvent,
-  NonefinityConfig,
-  SimpleClientConfig,
+    ChatConfig,
+    ChatSession,
+    ChatMessage,
+    StreamEvent,
+    NonefinityConfig,
+    SimpleClientConfig,
 } from "@nonefinity/ai-sdk";
 ```
 
 ## Browser Support
 
-- Chrome/Edge (latest)
-- Firefox (latest)
-- Safari (latest)
-- Opera (latest)
+-   Chrome/Edge (latest)
+-   Firefox (latest)
+-   Safari (latest)
+-   Opera (latest)
 
 ## License
 
@@ -231,5 +240,6 @@ MIT © Nonefinity
 ## Support
 
 For issues and questions, please visit:
-- [GitHub Issues](https://github.com/genius-wizard-dev/Nonefinity_Agents/issues)
-- [Documentation](https://github.com/genius-wizard-dev/Nonefinity_Agents)
+
+-   [GitHub Issues](https://github.com/genius-wizard-dev/Nonefinity_Agents/issues)
+-   [Documentation](https://github.com/genius-wizard-dev/Nonefinity_Agents)

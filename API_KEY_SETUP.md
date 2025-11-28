@@ -5,10 +5,11 @@ This guide explains how to set up and use API keys with the Nonefinity AI SDK fo
 ## Overview
 
 API keys allow you to authenticate your applications without requiring user login. They're perfect for:
-- Server-to-server integrations
-- External website embedding
-- Automated workflows
-- Third-party applications
+
+-   Server-to-server integrations
+-   External website embedding
+-   Automated workflows
+-   Third-party applications
 
 ## Quick Start
 
@@ -21,24 +22,24 @@ import { NonefinityClient } from "@nonefinity/ai-sdk";
 
 // Initialize client with JWT token (from your login)
 const client = new NonefinityClient({
-  apiUrl: "https://your-api-url.com",
-  getAuthToken: async () => {
-    // Get your JWT token from your auth system (e.g., Clerk)
-    return yourAuthToken;
-  },
+    // apiUrl: "https://api.nonefinity.com/api/v1", // Optional: Defaults to production
+    getAuthToken: async () => {
+        // Get your JWT token from your auth system (e.g., Clerk)
+        return yourAuthToken;
+    },
 });
 
 // Create a new API key
 const response = await client.createAPIKey({
-  name: "Production Website",
-  expires_in_days: 365, // Optional: expires in 1 year
-  permissions: ["chat:read", "chat:write"], // Optional: defaults to chat permissions
+    name: "Production Website",
+    expires_in_days: 365, // Optional: expires in 1 year
+    permissions: ["chat:read", "chat:write"], // Optional: defaults to chat permissions
 });
 
 if (response.success && response.data) {
-  console.log("API Key created!");
-  console.log("Key:", response.data.api_key);
-  // ⚠️ IMPORTANT: Save this key securely! It won't be shown again.
+    console.log("API Key created!");
+    console.log("Key:", response.data.api_key);
+    // ⚠️ IMPORTANT: Save this key securely! It won't be shown again.
 }
 ```
 
@@ -49,8 +50,8 @@ Once you have your API key, use it to authenticate:
 ```typescript
 // Initialize client with API key
 const client = new NonefinityClient({
-  apiUrl: "https://your-api-url.com",
-  apiKey: "nf_live_your_api_key_here",
+    // apiUrl: "https://api.nonefinity.com/api/v1", // Optional: Defaults to production
+    apiKey: "nf_live_your_api_key_here",
 });
 
 // Now you can use all chat features
@@ -62,24 +63,24 @@ const sessions = await client.listSessions();
 ```html
 <!DOCTYPE html>
 <html>
-<head>
-  <script type="module">
-    import { NonefinityClient } from 'https://unpkg.com/@nonefinity/ai-sdk/dist/index.mjs';
+    <head>
+        <script type="module">
+            import { NonefinityClient } from "https://unpkg.com/@nonefinity/ai-sdk/dist/index.mjs";
 
-    const client = new NonefinityClient({
-      apiUrl: 'https://your-api-url.com',
-      apiKey: 'nf_live_your_api_key_here'
-    });
+            const client = new NonefinityClient({
+                // apiUrl: 'https://api.nonefinity.com/api/v1', // Optional: Defaults to production
+                apiKey: "nf_live_your_api_key_here",
+            });
 
-    // Use the client
-    await client.streamMessage(sessionId, "Hello!", (event) => {
-      console.log(event);
-    });
-  </script>
-</head>
-<body>
-  <h1>My Website with AI Chat</h1>
-</body>
+            // Use the client
+            await client.streamMessage(sessionId, "Hello!", (event) => {
+                console.log(event);
+            });
+        </script>
+    </head>
+    <body>
+        <h1>My Website with AI Chat</h1>
+    </body>
 </html>
 ```
 
@@ -89,9 +90,9 @@ const sessions = await client.listSessions();
 
 ```typescript
 const response = await client.createAPIKey({
-  name: "My Integration",
-  expires_in_days: 90, // Optional: null for no expiration
-  permissions: ["chat:read", "chat:write"], // Optional
+    name: "My Integration",
+    expires_in_days: 90, // Optional: null for no expiration
+    permissions: ["chat:read", "chat:write"], // Optional
 });
 
 // Save the API key securely
@@ -106,11 +107,15 @@ const apiKey = response.data?.api_key;
 const response = await client.listAPIKeys();
 
 if (response.success && response.data) {
-  response.data.api_keys.forEach(key => {
-    console.log(`${key.name}: ${key.key_prefix}... (${key.is_active ? 'Active' : 'Inactive'})`);
-    console.log(`  Last used: ${key.last_used_at || 'Never'}`);
-    console.log(`  Expires: ${key.expires_at || 'Never'}`);
-  });
+    response.data.api_keys.forEach((key) => {
+        console.log(
+            `${key.name}: ${key.key_prefix}... (${
+                key.is_active ? "Active" : "Inactive"
+            })`
+        );
+        console.log(`  Last used: ${key.last_used_at || "Never"}`);
+        console.log(`  Expires: ${key.expires_at || "Never"}`);
+    });
 }
 ```
 
@@ -120,9 +125,9 @@ if (response.success && response.data) {
 const response = await client.getAPIKey(keyId);
 
 if (response.success && response.data) {
-  console.log("Key name:", response.data.name);
-  console.log("Active:", response.data.is_active);
-  console.log("Permissions:", response.data.permissions);
+    console.log("Key name:", response.data.name);
+    console.log("Active:", response.data.is_active);
+    console.log("Permissions:", response.data.permissions);
 }
 ```
 
@@ -131,17 +136,17 @@ if (response.success && response.data) {
 ```typescript
 // Rename a key
 await client.updateAPIKey(keyId, {
-  name: "Updated Name"
+    name: "Updated Name",
 });
 
 // Change permissions
 await client.updateAPIKey(keyId, {
-  permissions: ["chat:read"] // Read-only
+    permissions: ["chat:read"], // Read-only
 });
 
 // Deactivate a key
 await client.updateAPIKey(keyId, {
-  is_active: false
+    is_active: false,
 });
 ```
 
@@ -163,18 +168,18 @@ await client.deleteAPIKey(keyId);
 
 API keys follow this format: `nf_live_<random_string>`
 
-- **Prefix**: `nf_live_` indicates a production API key
-- **Random part**: Cryptographically secure random string
+-   **Prefix**: `nf_live_` indicates a production API key
+-   **Random part**: Cryptographically secure random string
 
 ## Permissions
 
 API keys support the following permissions:
 
-| Permission | Description |
-|------------|-------------|
-| `chat:read` | Read chat configurations, sessions, and messages |
-| `chat:write` | Create and update chats, send messages |
-| `*` | All permissions (admin) |
+| Permission   | Description                                      |
+| ------------ | ------------------------------------------------ |
+| `chat:read`  | Read chat configurations, sessions, and messages |
+| `chat:write` | Create and update chats, send messages           |
+| `*`          | All permissions (admin)                          |
 
 **Default permissions**: `["chat:read", "chat:write"]`
 
@@ -182,19 +187,19 @@ API keys support the following permissions:
 
 ### ✅ DO
 
-- **Store API keys securely** - Use environment variables or secure vaults
-- **Use HTTPS** - Always communicate over HTTPS
-- **Rotate keys regularly** - Create new keys periodically
-- **Use specific permissions** - Grant only necessary permissions
-- **Monitor key usage** - Check `last_used_at` for suspicious activity
-- **Set expiration dates** - Use `expires_in_days` for temporary integrations
+-   **Store API keys securely** - Use environment variables or secure vaults
+-   **Use HTTPS** - Always communicate over HTTPS
+-   **Rotate keys regularly** - Create new keys periodically
+-   **Use specific permissions** - Grant only necessary permissions
+-   **Monitor key usage** - Check `last_used_at` for suspicious activity
+-   **Set expiration dates** - Use `expires_in_days` for temporary integrations
 
 ### ❌ DON'T
 
-- **Don't commit keys to git** - Add them to `.gitignore`
-- **Don't share keys** - Each integration should have its own key
-- **Don't use keys in client-side code** - Except for public widgets with limited permissions
-- **Don't use expired keys** - Create new ones when they expire
+-   **Don't commit keys to git** - Add them to `.gitignore`
+-   **Don't share keys** - Each integration should have its own key
+-   **Don't use keys in client-side code** - Except for public widgets with limited permissions
+-   **Don't use expired keys** - Create new ones when they expire
 
 ## Environment Variables
 
@@ -210,8 +215,8 @@ NONEFINITY_API_KEY=nf_live_your_api_key_here
 import { NonefinityClient } from "@nonefinity/ai-sdk";
 
 const client = new NonefinityClient({
-  apiUrl: process.env.NONEFINITY_API_URL!,
-  apiKey: process.env.NONEFINITY_API_KEY!,
+    // apiUrl: process.env.NONEFINITY_API_URL!, // Optional: Defaults to production
+    apiKey: process.env.NONEFINITY_API_KEY!,
 });
 ```
 
@@ -222,8 +227,8 @@ const client = new NonefinityClient({
 // If you must, use read-only permissions and monitor usage
 
 const client = new NonefinityClient({
-  apiUrl: import.meta.env.VITE_NONEFINITY_API_URL,
-  apiKey: import.meta.env.VITE_NONEFINITY_API_KEY,
+    // apiUrl: import.meta.env.VITE_NONEFINITY_API_URL, // Optional: Defaults to production
+    apiKey: import.meta.env.VITE_NONEFINITY_API_KEY,
 });
 ```
 
@@ -231,26 +236,26 @@ const client = new NonefinityClient({
 
 ```typescript
 try {
-  const response = await client.createAPIKey({
-    name: "My Key"
-  });
+    const response = await client.createAPIKey({
+        name: "My Key",
+    });
 
-  if (!response.success) {
-    console.error("Failed to create key:", response.error);
-  }
+    if (!response.success) {
+        console.error("Failed to create key:", response.error);
+    }
 } catch (error) {
-  console.error("Error:", error);
+    console.error("Error:", error);
 }
 ```
 
 ## API Key vs JWT Token
 
-| Feature | API Key | JWT Token |
-|---------|---------|-----------|
-| **Use Case** | Server integrations, external apps | User authentication |
-| **Expiration** | Optional (up to 365 days) | Short-lived (hours) |
-| **Permissions** | Configurable | Full user access |
-| **Best For** | Automated systems | Web/mobile apps |
+| Feature         | API Key                            | JWT Token           |
+| --------------- | ---------------------------------- | ------------------- |
+| **Use Case**    | Server integrations, external apps | User authentication |
+| **Expiration**  | Optional (up to 365 days)          | Short-lived (hours) |
+| **Permissions** | Configurable                       | Full user access    |
+| **Best For**    | Automated systems                  | Web/mobile apps     |
 
 ## Example: Full Integration
 
@@ -259,51 +264,51 @@ import { NonefinityClient } from "@nonefinity/ai-sdk";
 
 // Step 1: Create an API key (one-time setup with JWT)
 async function setupAPIKey() {
-  const setupClient = new NonefinityClient({
-    apiUrl: "https://your-api-url.com",
-    getAuthToken: async () => yourJWTToken,
-  });
+    const setupClient = new NonefinityClient({
+        // apiUrl: "https://api.nonefinity.com/api/v1", // Optional: Defaults to production
+        getAuthToken: async () => yourJWTToken,
+    });
 
-  const response = await setupClient.createAPIKey({
-    name: "Production Integration",
-    expires_in_days: 365,
-    permissions: ["chat:read", "chat:write"],
-  });
+    const response = await setupClient.createAPIKey({
+        name: "Production Integration",
+        expires_in_days: 365,
+        permissions: ["chat:read", "chat:write"],
+    });
 
-  if (response.success && response.data) {
-    console.log("🔑 Save this API key:", response.data.api_key);
-    // Store it in your environment variables or secure vault
-    return response.data.api_key;
-  }
+    if (response.success && response.data) {
+        console.log("🔑 Save this API key:", response.data.api_key);
+        // Store it in your environment variables or secure vault
+        return response.data.api_key;
+    }
 }
 
 // Step 2: Use the API key in your application
 async function useChatSystem(apiKey: string) {
-  const client = new NonefinityClient({
-    apiUrl: "https://your-api-url.com",
-    apiKey: apiKey,
-  });
+    const client = new NonefinityClient({
+        // apiUrl: "https://api.nonefinity.com/api/v1", // Optional: Defaults to production
+        apiKey: apiKey,
+    });
 
-  // Create a session
-  const sessionResp = await client.createSession({
-    chat_config_id: "your-config-id",
-    name: "Customer Chat",
-  });
+    // Create a session
+    const sessionResp = await client.createSession({
+        chat_config_id: "your-config-id",
+        name: "Customer Chat",
+    });
 
-  if (sessionResp.success && sessionResp.data) {
-    const sessionId = sessionResp.data.id;
+    if (sessionResp.success && sessionResp.data) {
+        const sessionId = sessionResp.data.id;
 
-    // Stream a message
-    await client.streamMessage(
-      sessionId,
-      "Hello, how can I help?",
-      (event) => {
-        if (event.event === "ai_result") {
-          console.log("AI:", event.data.content);
-        }
-      }
-    );
-  }
+        // Stream a message
+        await client.streamMessage(
+            sessionId,
+            "Hello, how can I help?",
+            (event) => {
+                if (event.event === "ai_result") {
+                    console.log("AI:", event.data.content);
+                }
+            }
+        );
+    }
 }
 
 // Run
@@ -319,15 +324,20 @@ await useChatSystem(apiKey);
 const response = await client.listAPIKeys();
 
 if (response.success && response.data) {
-  response.data.api_keys.forEach(key => {
-    const daysSinceUse = key.last_used_at 
-      ? Math.floor((Date.now() - new Date(key.last_used_at).getTime()) / (1000 * 60 * 60 * 24))
-      : Infinity;
+    response.data.api_keys.forEach((key) => {
+        const daysSinceUse = key.last_used_at
+            ? Math.floor(
+                  (Date.now() - new Date(key.last_used_at).getTime()) /
+                      (1000 * 60 * 60 * 24)
+              )
+            : Infinity;
 
-    if (daysSinceUse > 90) {
-      console.warn(`⚠️ Key "${key.name}" hasn't been used in ${daysSinceUse} days`);
-    }
-  });
+        if (daysSinceUse > 90) {
+            console.warn(
+                `⚠️ Key "${key.name}" hasn't been used in ${daysSinceUse} days`
+            );
+        }
+    });
 }
 ```
 
@@ -336,46 +346,51 @@ if (response.success && response.data) {
 ```typescript
 // Create new key
 const newKeyResp = await client.createAPIKey({
-  name: "Production Key (2024-11)",
-  expires_in_days: 365,
+    name: "Production Key (2024-11)",
+    expires_in_days: 365,
 });
 
 if (newKeyResp.success && newKeyResp.data) {
-  // Update your application to use the new key
-  const newApiKey = newKeyResp.data.api_key;
-  
-  // After verification, revoke the old key
-  await client.revokeAPIKey(oldKeyId);
+    // Update your application to use the new key
+    const newApiKey = newKeyResp.data.api_key;
+
+    // After verification, revoke the old key
+    await client.revokeAPIKey(oldKeyId);
 }
 ```
 
 ## Troubleshooting
 
 ### "Invalid API key"
-- Check that the key starts with `nf_live_`
-- Verify the key is active: `is_active: true`
-- Ensure the key hasn't expired
+
+-   Check that the key starts with `nf_live_`
+-   Verify the key is active: `is_active: true`
+-   Ensure the key hasn't expired
 
 ### "Permission denied"
-- Check the key's permissions match your operation
-- Update permissions: `client.updateAPIKey(keyId, { permissions: [...] })`
+
+-   Check the key's permissions match your operation
+-   Update permissions: `client.updateAPIKey(keyId, { permissions: [...] })`
 
 ### "API key is expired"
-- Create a new API key
-- Update your configuration with the new key
+
+-   Create a new API key
+-   Update your configuration with the new key
 
 ### "API key is inactive"
-- Reactivate: `client.updateAPIKey(keyId, { is_active: true })`
-- Or create a new key if intentionally revoked
+
+-   Reactivate: `client.updateAPIKey(keyId, { is_active: true })`
+-   Or create a new key if intentionally revoked
 
 ## Support
 
 For issues or questions:
-- [GitHub Issues](https://github.com/genius-wizard-dev/Nonefinity_Agents/issues)
-- [Documentation](https://github.com/genius-wizard-dev/Nonefinity_Agents)
+
+-   [GitHub Issues](https://github.com/genius-wizard-dev/Nonefinity_Agents/issues)
+-   [Documentation](https://github.com/genius-wizard-dev/Nonefinity_Agents)
 
 ## Next Steps
 
-- [Main README](./README.md) - SDK overview and features
-- [Examples](./examples/) - More code examples
-- [Publishing Guide](./PUBLISHING.md) - Publishing to npm
+-   [Main README](./README.md) - SDK overview and features
+-   [Examples](./examples/) - More code examples
+-   [Publishing Guide](./PUBLISHING.md) - Publishing to npm

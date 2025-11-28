@@ -30,7 +30,17 @@ export class NonefinityClient {
     private debug: boolean;
 
     constructor(config: NonefinityConfig) {
-        this.apiUrl = (config.apiUrl || getDefaultApiUrl()).replace(/\/$/, ""); // Remove trailing slash
+        const fallback =
+            typeof getDefaultApiUrl === "function"
+                ? getDefaultApiUrl()
+                : "https://api.nonefinity.com/api/v1";
+
+        const rawUrl = config.apiUrl ?? fallback;
+
+        this.apiUrl = (rawUrl || "https://api.nonefinity.com/api/v1").replace(
+            /\/$/,
+            ""
+        ); // Remove trailing slash
         this.apiKey = config.apiKey;
         this.getAuthToken = config.getAuthToken;
         this.debug = config.debug || false;
