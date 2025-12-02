@@ -1,15 +1,15 @@
 {
     "name": "@nonefinity/ai-sdk",
-    "version": "1.0.2",
+    "version": "1.1.0",
     "description": "AI SDK for integrating Nonefinity chat system into any website",
     "main": "./dist/index.js",
     "module": "./dist/index.mjs",
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
+            "types": "./dist/index.d.ts",
             "import": "./dist/index.mjs",
-            "require": "./dist/index.js",
-            "types": "./dist/index.d.ts"
+            "require": "./dist/index.js"
         },
         "./styles": "./dist/ChatWidget.css"
     },
@@ -39,13 +39,13 @@
     ],
     "author": "Nonefinity",
     "license": "MIT",
-    "homepage": "https://github.com/genius-wizard-dev/Nonefinity_Agents",
+    "homepage": "https://github.com/minhbn3107/Nonefinity_SDK",
     "repository": {
         "type": "git",
-        "url": "https://github.com/genius-wizard-dev/Nonefinity_Agents.git"
+        "url": "https://github.com/minhbn3107/Nonefinity_SDK.git"
     },
     "bugs": {
-        "url": "https://github.com/genius-wizard-dev/Nonefinity_Agents/issues"
+        "url": "https://github.com/minhbn3107/Nonefinity_SDK/issues"
     },
     "devDependencies": {
         "@eslint/js": "^9.39.0",

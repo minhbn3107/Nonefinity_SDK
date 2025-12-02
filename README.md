@@ -20,11 +20,11 @@ AI SDK for integrating Nonefinity's powerful chat system into any website. Built
 Always install the latest published version to benefit from the newest browser fixes and streaming improvements.
 
 ```bash
-npm install @nonefinity/ai-sdk@^1.0.1
+npm install @nonefinity/ai-sdk
 # or
-yarn add @nonefinity/ai-sdk@^1.0.1
+yarn add @nonefinity/ai-sdk
 # or
-pnpm add @nonefinity/ai-sdk@^1.0.1
+pnpm add @nonefinity/ai-sdk
 ```
 
 > **Heads up:** Version 1.0.1 includes improved SSE parsing for browsers that deliver events as strings (Safari, some Chromium builds). Upgrade if you previously saw empty assistant replies.
@@ -228,10 +228,8 @@ import type {
 
 ## Browser Support
 
--   Chrome/Edge (latest)
--   Firefox (latest)
--   Safari (latest)
--   Opera (latest)
+-   Chrome/Edge (142)
+-   Firefox (145)
 
 ## License
 
