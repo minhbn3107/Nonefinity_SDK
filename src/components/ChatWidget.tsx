@@ -6,6 +6,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNonefinityChat } from "../hooks/useNonefinityChat";
 import type { WidgetConfig } from "../types";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import "./ChatWidget.css";
 
 export const ChatWidget: React.FC<WidgetConfig> = ({
@@ -169,7 +171,20 @@ export const ChatWidget: React.FC<WidgetConfig> = ({
                                     className={`nonefinity-message nonefinity-message-${msg.role}`}
                                 >
                                     <div className="nonefinity-message-content">
-                                        {msg.content && <p>{msg.content}</p>}
+                                        {msg.content &&
+                                            (msg.role === "assistant" ? (
+                                                <div className="nonefinity-markdown">
+                                                    <ReactMarkdown
+                                                        remarkPlugins={[
+                                                            remarkGfm,
+                                                        ]}
+                                                    >
+                                                        {msg.content}
+                                                    </ReactMarkdown>
+                                                </div>
+                                            ) : (
+                                                <p>{msg.content}</p>
+                                            ))}
                                         {isThinking &&
                                             msg.id === "streaming" &&
                                             !msg.content && (
